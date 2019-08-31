@@ -48,8 +48,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallspeed: 1
-  allowrotation: 1
-  limitrotation: 0
+  allowrotation: 0
+  limitrotation: 1
 --- !u!1 &4526930702992400746
 GameObject:
   m_ObjectHideFlags: 0

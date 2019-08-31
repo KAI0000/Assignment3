@@ -54,6 +54,10 @@ public class Tetro : MonoBehaviour
             else
             {
                 transform.position += Vector3.up;
+                enabled = false;
+                FindObjectOfType<Game>().SpawnNext();//when one set down another one keep falling
+
+
             }
             fall = Mathf.Round(Time.time);
         }
