@@ -4,74 +4,85 @@ using UnityEngine;
 
 public class Tetro : MonoBehaviour
 {
-    float fall = 0;
-    public float fallspeed = 1;
+    float lastFall = 0;
     public bool allowrotation = true;
     public bool limitrotation = false;
-    // Start is called before the first frame update
-
     void Start()
     {
 
+        // Default position not valid? Then it's game over
+        if (!isValidGridPos())
+        {
+            Debug.Log("GAME OVER");
+            Destroy(gameObject);
+        }
     }
 
-    // Update is called once per frame
+    bool isValidGridPos()
+    {
+        foreach (Transform child in transform)
+        {
+            Vector2 v = Game.roundVec2(child.position);
+
+            // Not inside Border?
+            if (!Game.insideBorder(v))
+                return false;
+
+            // Block in grid cell (and not part of same group)?
+            if (Game.grid[(int)v.x, (int)v.y] != null &&
+                Game.grid[(int)v.x, (int)v.y].parent != transform)
+                return false;
+        }
+        return true;
+    }
+    void updateGrid()
+    {
+        // Remove old children from grid
+        for (int y = 0; y < Game.h; ++y)
+            for (int x = 0; x < Game.w; ++x)
+                if (Game.grid[x, y] != null)
+                    if (Game.grid[x, y].parent == transform)
+                        Game.grid[x, y] = null;
+
+        // Add new children to grid
+        foreach (Transform child in transform)
+        {
+            Vector2 v = Game.roundVec2(child.position);
+            Game.grid[(int)v.x, (int)v.y] = child;
+        }
+    }
     void Update()
     {
-        CheckInput();
-
-    }
-    void CheckInput()
-    {
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        // Move Left
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            transform.position += Vector3.right;//or new Vector3(1, 0, 0); attampt move
-            if (InsideFrame())
-            {
-                FindObjectOfType<Game>().updategrid(this);
-            }
-            else
-            {
-                transform.position += Vector3.left;
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
+            // Modify position
             transform.position += new Vector3(-1, 0, 0);
-            if (InsideFrame())
-            {
-                FindObjectOfType<Game>().updategrid(this);
-            }
+
+            // See if valid
+            if (isValidGridPos())
+                // Its valid. Update grid.
+                updateGrid();
             else
-            {
-                transform.position += Vector3.right;
-            }
+                // Its not valid. revert.
+                transform.position += new Vector3(1, 0, 0);
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Mathf.Round(Time.time) - fall == fallspeed)
+
+        // Move Right
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            transform.position += Vector3.down;
-            if (InsideFrame())
-            {
-                FindObjectOfType<Game>().updategrid(this);
-            }
+            // Modify position
+            transform.position += new Vector3(1, 0, 0);
+
+            // See if valid
+            if (isValidGridPos())
+                // It's valid. Update grid.
+                updateGrid();
             else
-            {
-                transform.position += Vector3.up;
-                enabled = false;
-                FindObjectOfType<Game>().SpawnNext();//when one set down another one keep falling
-
-
-            }
-            fall = Mathf.Round(Time.time);
+                // It's not valid. revert.
+                transform.position += new Vector3(-1, 0, 0);
         }
-
-
-        //else if (Input.GetKeyDown(KeyCode.DownArrow) || Time.time - fall >= fallspeed)
-        /*{
-            transform.position += new Vector3(0, -1, 0);
-            fall = Time.time;
-            }*/
-
+        // Rotate
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             if (allowrotation)
@@ -91,12 +102,12 @@ public class Tetro : MonoBehaviour
                 {
                     transform.Rotate(0, 0, 90);
                 }
+            
 
-
-                if (InsideFrame())
-                {
-                    FindObjectOfType<Game>().updategrid(this);
-                }
+                // See if valid
+                if (isValidGridPos())
+                        // It's valid. Update grid.
+                        updateGrid();
                 else
                 {
                     if (limitrotation)
@@ -110,7 +121,6 @@ public class Tetro : MonoBehaviour
                         {
                             transform.Rotate(0, 0, 90);
                         }
-
                     }
                     else
                     {
@@ -119,26 +129,66 @@ public class Tetro : MonoBehaviour
                 }
             }
         }
-
-
-        bool InsideFrame()
+        
+        // Fall
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            foreach (Transform Block in transform)
-            {
-                Vector2 pos = FindObjectOfType<Game>().Round(Block.position);
-                if (FindObjectOfType<Game>().InsideFrame(pos) == false)
-                {
-                    return false;
-                }
-                if (FindObjectOfType<Game>().GetTransformAtGridPosition(pos) != null && FindObjectOfType<Game>().GetTransformAtGridPosition(pos).parent != transform)
-                {
-                    return false;
+            // Modify position
+            transform.position += new Vector3(0, -1, 0);
 
-                }
+            // See if valid
+            if (isValidGridPos())
+            {
+                // It's valid. Update grid.
+                updateGrid();
             }
-            return true; //back to checkinput
+            else
+            {
+                // It's not valid. revert.
+                transform.position += new Vector3(0, 1, 0);
+
+                // Clear filled horizontal lines
+                Game.deleteFullRows();
+
+                // Spawn next Group
+                FindObjectOfType<Game>().SpawnerNext();
+
+                // Disable script
+                enabled = false;
+            }
+        }
+        // Move Downwards and Fall
+        else if (Input.GetKeyDown(KeyCode.DownArrow) ||
+                 Time.time - lastFall >= 1)
+        {
+            // Modify position
+            transform.position += new Vector3(0, -1, 0);
+
+            // See if valid
+            if (isValidGridPos())
+            {
+                // It's valid. Update grid.
+                updateGrid();
+            }
+            else
+            {
+                // It's not valid. revert.
+                transform.position += new Vector3(0, 1, 0);
+
+                // Clear filled horizontal lines
+                Game.deleteFullRows();
+
+                // Spawn next Group
+                FindObjectOfType<Game>().SpawnerNext();
+
+                // Disable script
+                enabled = false;
+            }
+
+            lastFall = Time.time;
+        }
 
         }
-    }
+    
 }
 
