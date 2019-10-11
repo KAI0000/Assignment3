@@ -28,6 +28,7 @@ public class Tetro : MonoBehaviour
             transform.position += Vector3.right;//or new Vector3(1, 0, 0); attampt move
             if (InsideFrame())
             {
+                FindObjectOfType<Game>().updategrid(this);
             }
             else
             {
@@ -39,6 +40,7 @@ public class Tetro : MonoBehaviour
             transform.position += new Vector3(-1, 0, 0);
             if (InsideFrame())
             {
+                FindObjectOfType<Game>().updategrid(this);
             }
             else
             {
@@ -50,6 +52,7 @@ public class Tetro : MonoBehaviour
             transform.position += Vector3.down;
             if (InsideFrame())
             {
+                FindObjectOfType<Game>().updategrid(this);
             }
             else
             {
@@ -92,6 +95,7 @@ public class Tetro : MonoBehaviour
 
                 if (InsideFrame())
                 {
+                    FindObjectOfType<Game>().updategrid(this);
                 }
                 else
                 {
@@ -117,22 +121,24 @@ public class Tetro : MonoBehaviour
         }
 
 
-            bool InsideFrame()
+        bool InsideFrame()
+        {
+            foreach (Transform Block in transform)
             {
-                foreach (Transform Block in transform)
+                Vector2 pos = FindObjectOfType<Game>().Round(Block.position);
+                if (FindObjectOfType<Game>().InsideFrame(pos) == false)
                 {
-                    Vector2 pos = FindObjectOfType<Game>().Round(Block.position);
-                    if (FindObjectOfType<Game>().InsideFrame(pos) == false)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                return true; //back to checkinput
+                if (FindObjectOfType<Game>().GetTransformAtGridPosition(pos) != null && FindObjectOfType<Game>().GetTransformAtGridPosition(pos).parent != transform)
+                {
+                    return false;
 
-
-
+                }
             }
+            return true; //back to checkinput
 
-            
+        }
     }
 }
+
