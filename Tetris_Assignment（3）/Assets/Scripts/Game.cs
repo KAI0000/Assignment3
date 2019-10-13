@@ -1,20 +1,53 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class Game : MonoBehaviour
 {
     public static int w = 9;
     public static int h = 18;
     public static Transform[,] grid = new Transform[w, h];
+    public int score1Line = 20;
+    public int score2Line = 50;
+    public int score3Line = 180;
+    public int score4Line = 500;
+    public Text hud_socre;
+    private static int numberofrows = 0;
     // Start is called before the first frame update
-    
+
     public static Vector2 roundVec2(Vector2 v) {
         return new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
     }
     void Start() {
         SpawnerNext();
     }
+    void Update() {
+        UpdateScore();
+    }
+    public void UpdateScore() {
+
+        if (numberofrows > 0) {
+            if (numberofrows == 1){
+                Clear1Line();
+            }
+            else if (numberofrows == 2) {
+                Clear2Line();
+            }
+            else if (numberofrows == 3) {
+                Clear3Line();
+            }
+            else if (numberofrows == 4) {
+                Clear4Line();
+            }
+        }
+        numberofrows = 0;
+    }
+    public void Clear1Line() { }
+    public void Clear2Line() { }
+    public void Clear3Line() { }
+    public void Clear4Line() { }
+
+
     public static bool insideBorder(Vector2 pos)
     {
         return ((int)pos.x >= 0 &&
@@ -85,9 +118,13 @@ public class Game : MonoBehaviour
     }
     public static bool isRowFull(int y)
     {
-        for (int x = 0; x < w; ++x)
+        for (int x = 0; x < w; ++x) { 
             if (grid[x, y] == null)
+            {
                 return false;
+            }
+    }
+        numberofrows++;
         return true;
     }
     public static void deleteFullRows()
