@@ -11,8 +11,9 @@ public class Game : MonoBehaviour
     public int score2Line = 50;
     public int score3Line = 180;
     public int score4Line = 500;
-    public Text hud_socre;
-    private static int numberofrows = 0;
+    public Text hud_score;
+    private int numberofrows = 0;
+    private int currentScore = 0;
     // Start is called before the first frame update
 
     public static Vector2 roundVec2(Vector2 v) {
@@ -23,8 +24,12 @@ public class Game : MonoBehaviour
     }
     void Update() {
         UpdateScore();
+        UpdateUI();
     }
-    public void UpdateScore() {
+    void UpdateUI() {
+        hud_score.text = currentScore.ToString();
+    }
+    void UpdateScore() {
 
         if (numberofrows > 0) {
             if (numberofrows == 1){
@@ -42,10 +47,18 @@ public class Game : MonoBehaviour
         }
         numberofrows = 0;
     }
-    public void Clear1Line() { }
-    public void Clear2Line() { }
-    public void Clear3Line() { }
-    public void Clear4Line() { }
+    public void Clear1Line() {
+        currentScore += score1Line;
+    }
+    public void Clear2Line() {
+        currentScore += score2Line;
+    }
+    public void Clear3Line() {
+        currentScore += score3Line;
+    }
+    public void Clear4Line() {
+        currentScore += score4Line;
+    }
 
 
     public static bool insideBorder(Vector2 pos)
@@ -88,7 +101,7 @@ public class Game : MonoBehaviour
         }
         return randomTetrominoName;
     }
-    public static void deleteRow(int y)
+    public void deleteRow(int y)
     {
         for (int x = 0; x < w; ++x)
         {
@@ -96,7 +109,7 @@ public class Game : MonoBehaviour
             grid[x, y] = null;
         }
     }
-    public static void decreaseRow(int y)
+    public void decreaseRow(int y)
     {
         for (int x = 0; x < w; ++x)
         {
@@ -111,12 +124,12 @@ public class Game : MonoBehaviour
             }
         }
     }
-    public static void decreaseRowsAbove(int y)
+    public void decreaseRowsAbove(int y)
     {
         for (int i = y; i < h; ++i)
             decreaseRow(i);
     }
-    public static bool isRowFull(int y)
+    public bool isRowFull(int y)
     {
         for (int x = 0; x < w; ++x) { 
             if (grid[x, y] == null)
@@ -127,7 +140,7 @@ public class Game : MonoBehaviour
         numberofrows++;
         return true;
     }
-    public static void deleteFullRows()
+    public void deleteFullRows()
     {
         for (int y = 0; y < h; ++y)
         {

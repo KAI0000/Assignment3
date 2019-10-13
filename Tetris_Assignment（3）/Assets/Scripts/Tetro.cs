@@ -148,8 +148,8 @@ public class Tetro : MonoBehaviour
                 transform.position += new Vector3(0, 1, 0);
 
                 // Clear filled horizontal lines
-                Game.deleteFullRows();
-
+                FindObjectOfType<Game>().deleteFullRows();
+                
                 // Spawn next Group
                 FindObjectOfType<Game>().SpawnerNext();
 
@@ -176,8 +176,8 @@ public class Tetro : MonoBehaviour
                 transform.position += new Vector3(0, 1, 0);
 
                 // Clear filled horizontal lines
-                Game.deleteFullRows();
-
+                
+                FindObjectOfType<Game>().deleteFullRows();
                 // Spawn next Group
                 FindObjectOfType<Game>().SpawnerNext();
 
