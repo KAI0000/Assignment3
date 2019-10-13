@@ -14,6 +14,13 @@ public class Game : MonoBehaviour
     public Text hud_score;
     private int numberofrows = 0;
     private int currentScore = 0;
+    private AudioSource audioSource;
+    public AudioClip good;
+    public AudioClip amazing;
+    public AudioClip excellent;
+    public AudioClip unbelieveable;
+
+
     // Start is called before the first frame update
 
     public static Vector2 roundVec2(Vector2 v) {
@@ -21,7 +28,10 @@ public class Game : MonoBehaviour
     }
     void Start() {
         SpawnerNext();
+        audioSource = GetComponent<AudioSource>();
     }
+    
+
     void Update() {
         UpdateScore();
         UpdateUI();
@@ -34,21 +44,48 @@ public class Game : MonoBehaviour
         if (numberofrows > 0) {
             if (numberofrows == 1){
                 Clear1Line();
+                Sgood();
+
             }
             else if (numberofrows == 2) {
                 Clear2Line();
+                Samazing();
             }
             else if (numberofrows == 3) {
                 Clear3Line();
+                Sexcellent();
+                
             }
             else if (numberofrows == 4) {
                 Clear4Line();
+                Sunbelieveable();
+                
             }
         }
         numberofrows = 0;
+        
+    }
+    public void Sgood()
+    {
+        audioSource.PlayOneShot(good);
+    }
+
+    public void Samazing()
+    {
+        audioSource.PlayOneShot(amazing);
+    }
+    public void Sexcellent()
+    {
+        audioSource.PlayOneShot(excellent);
+    }
+    public void Sunbelieveable()
+    {
+        audioSource.PlayOneShot(unbelieveable);
     }
     public void Clear1Line() {
         currentScore += score1Line;
+        
+        
     }
     public void Clear2Line() {
         currentScore += score2Line;
@@ -149,6 +186,7 @@ public class Game : MonoBehaviour
                 deleteRow(y);
                 decreaseRowsAbove(y + 1);
                 --y;
+                
             }
         }
     }

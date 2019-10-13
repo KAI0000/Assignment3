@@ -7,15 +7,13 @@ public class Tetro : MonoBehaviour
     float lastFall = 0;
     public bool allowrotation = true;
     public bool limitrotation = false;
+    public AudioClip moveSound;
+    public AudioClip rotation;
+    
+    private AudioSource audioSource;
     void Start()
     {
-
-        // Default position not valid? Then it's game over
-        if (!isValidGridPos())
-        {
-            Debug.Log("GAME OVER");
-            Destroy(gameObject);
-        }
+        audioSource = GetComponent<AudioSource>();
     }
 
     bool isValidGridPos()
@@ -61,11 +59,12 @@ public class Tetro : MonoBehaviour
 
             // See if valid
             if (isValidGridPos())
-                // Its valid. Update grid.
-                updateGrid();
+            // Its valid. Update grid.
+            { updateGrid(); MoveAudio(); }
+
             else
-                // Its not valid. revert.
-                transform.position += new Vector3(1, 0, 0);
+            // Its not valid. revert.
+            transform.position += new Vector3(1, 0, 0); 
         }
 
         // Move Right
@@ -76,8 +75,8 @@ public class Tetro : MonoBehaviour
 
             // See if valid
             if (isValidGridPos())
-                // It's valid. Update grid.
-                updateGrid();
+            // It's valid. Update grid.
+            { updateGrid(); MoveAudio(); }
             else
                 // It's not valid. revert.
                 transform.position += new Vector3(-1, 0, 0);
@@ -102,12 +101,12 @@ public class Tetro : MonoBehaviour
                 {
                     transform.Rotate(0, 0, 90);
                 }
-            
+
 
                 // See if valid
                 if (isValidGridPos())
-                        // It's valid. Update grid.
-                        updateGrid();
+                // It's valid. Update grid.
+                { updateGrid(); RotationAudio(); }
                 else
                 {
                     if (limitrotation)
@@ -129,7 +128,7 @@ public class Tetro : MonoBehaviour
                 }
             }
         }
-        
+
         // Fall
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
@@ -140,7 +139,7 @@ public class Tetro : MonoBehaviour
             if (isValidGridPos())
             {
                 // It's valid. Update grid.
-                updateGrid();
+                updateGrid(); MoveAudio();
             }
             else
             {
@@ -148,8 +147,8 @@ public class Tetro : MonoBehaviour
                 transform.position += new Vector3(0, 1, 0);
 
                 // Clear filled horizontal lines
-                FindObjectOfType<Game>().deleteFullRows();
-                
+                FindObjectOfType<Game>().deleteFullRows(); 
+
                 // Spawn next Group
                 FindObjectOfType<Game>().SpawnerNext();
 
@@ -168,7 +167,7 @@ public class Tetro : MonoBehaviour
             if (isValidGridPos())
             {
                 // It's valid. Update grid.
-                updateGrid();
+                updateGrid(); 
             }
             else
             {
@@ -176,8 +175,10 @@ public class Tetro : MonoBehaviour
                 transform.position += new Vector3(0, 1, 0);
 
                 // Clear filled horizontal lines
-                
+
                 FindObjectOfType<Game>().deleteFullRows();
+                
+                
                 // Spawn next Group
                 FindObjectOfType<Game>().SpawnerNext();
 
@@ -188,7 +189,15 @@ public class Tetro : MonoBehaviour
             lastFall = Time.time;
         }
 
-        }
-    
+    }
+    void MoveAudio() {
+        audioSource.PlayOneShot(moveSound);
+    }
+    void RotationAudio() {
+        audioSource.PlayOneShot(rotation);
+    }
+   
+
+
 }
 
