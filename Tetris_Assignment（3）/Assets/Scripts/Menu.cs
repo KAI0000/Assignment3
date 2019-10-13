@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Menu : MonoBehaviour
 {
-    public void PlayAgain()
+    public void Play()
     {
         Application.LoadLevel("Level");
     }

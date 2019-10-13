@@ -22,54 +22,59 @@ public class Game : MonoBehaviour
 
 
     // Start is called before the first frame update
-
-    public static Vector2 roundVec2(Vector2 v) {
-        return new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
-    }
-    void Start() {
+    
+    void Start()
+    {
         SpawnerNext();
         audioSource = GetComponent<AudioSource>();
     }
-    
 
-    void Update() {
+
+    void Update()
+    {
         UpdateScore();
         UpdateUI();
     }
-    void UpdateUI() {
+    void UpdateUI()
+    {
         hud_score.text = currentScore.ToString();
     }
-    void UpdateScore() {
+    void UpdateScore()
+    {
 
-        if (numberofrows > 0) {
-            if (numberofrows == 1){
+        if (numberofrows > 0)
+        {
+            if (numberofrows == 1)
+            {
                 Clear1Line();
                 Sgood();
 
             }
-            else if (numberofrows == 2) {
+            else if (numberofrows == 2)
+            {
                 Clear2Line();
                 Samazing();
             }
-            else if (numberofrows == 3) {
+            else if (numberofrows == 3)
+            {
                 Clear3Line();
                 Sexcellent();
-                
+
             }
-            else if (numberofrows == 4) {
+            else if (numberofrows == 4)
+            {
                 Clear4Line();
                 Sunbelieveable();
-                
+
             }
         }
         numberofrows = 0;
-        
+
     }
     public void Sgood()
     {
         audioSource.PlayOneShot(good);
     }
-
     public void Samazing()
     {
         audioSource.PlayOneShot(amazing);
@@ -82,35 +87,40 @@ public class Game : MonoBehaviour
     {
         audioSource.PlayOneShot(unbelieveable);
     }
-    public void Clear1Line() {
+    public void Clear1Line()
+    {
         currentScore += score1Line;
-        
-        
+
+
     }
-    public void Clear2Line() {
+    public void Clear2Line()
+    {
         currentScore += score2Line;
     }
-    public void Clear3Line() {
+    public void Clear3Line()
+    {
         currentScore += score3Line;
     }
-    public void Clear4Line() {
+    public void Clear4Line()
+    {
         currentScore += score4Line;
     }
-
-
-    public static bool insideBorder(Vector2 pos)
+    public static bool insideBorder(Vector2 v)
     {
-        return ((int)pos.x >= 0 &&
-        (int)pos.x < w &&
-        (int)pos.y >= 0);
+        return ((int)v.x >= 0 &&
+        (int)v.x < w &&
+        (int)v.y >= 0);
     }
-    public void SpawnerNext() {
+    public void SpawnerNext()
+    {
         GameObject nextTertromino = (GameObject)Instantiate(Resources.Load(GetRandomTetromino(), typeof(GameObject)), new Vector2(5.0f, 20.0f), Quaternion.identity);
     }
-    string GetRandomTetromino() {
+    string GetRandomTetromino()
+    {
         int randomT = Random.Range(1, 8);
         string randomTetrominoName = "Prefabs/(i)";
-        switch (randomT) {
+        switch (randomT)
+        {
             case 1:
                 randomTetrominoName = "Prefabs/(s)";
                 break;
@@ -168,12 +178,13 @@ public class Game : MonoBehaviour
     }
     public bool isRowFull(int y)
     {
-        for (int x = 0; x < w; ++x) { 
+        for (int x = 0; x < w; ++x)
+        {
             if (grid[x, y] == null)
             {
                 return false;
             }
-    }
+        }
         numberofrows++;
         return true;
     }
@@ -186,12 +197,36 @@ public class Game : MonoBehaviour
                 deleteRow(y);
                 decreaseRowsAbove(y + 1);
                 --y;
-                
+
             }
         }
     }
-    
+    public bool checkabovegrid(Tetro tetro)
+    {
+        for (int x = 0; x < w; ++x)
+        {
+            foreach (Transform mino in tetro.transform)
+            {
+                Vector2 pos = round(mino.position);
+                if (pos.y > h - 1)
+                {
+                    return true;
+                }
+
+            }
+
+        }
+        return false;
     }
+    public void GameOver() {
+        Application.LoadLevel("GameOver");
+    }
+    public static Vector2 round(Vector2 v)
+    {
+        return new Vector2(Mathf.Round(v.x), Mathf.Round(v.y));
+    }
+
+}
 
 
 

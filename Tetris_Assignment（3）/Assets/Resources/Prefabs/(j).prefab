@@ -48,10 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ff7a5c7079c6a14db3d7cdb7d0ba0cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowrotation: 0
-  limitrotation: 1
+  allowrotation: 1
+  limitrotation: 0
   moveSound: {fileID: 8300000, guid: ea0fffed1b41bba45a237f95bd5b2f22, type: 3}
-  delete: {fileID: 8300000, guid: c99baa04bcb673b45b78d7a1cb24ee41, type: 3}
   rotation: {fileID: 8300000, guid: fb5101a5dc3de5b4c8efee66fa9a4496, type: 3}
 --- !u!82 &8831783326157127467
 AudioSource:

@@ -15,21 +15,24 @@ public class Tetro : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
     }
-
     bool isValidGridPos()
     {
         foreach (Transform child in transform)
         {
-            Vector2 v = Game.roundVec2(child.position);
+            Vector2 v = Game.round(child.position);
 
             // Not inside Border?
             if (!Game.insideBorder(v))
                 return false;
 
             // Block in grid cell (and not part of same group)?
-            if (Game.grid[(int)v.x, (int)v.y] != null &&
-                Game.grid[(int)v.x, (int)v.y].parent != transform)
-                return false;
+            try
+            {
+                if ((Game.grid[(int)v.x, (int)v.y] != null &&
+                    Game.grid[(int)v.x, (int)v.y].parent != transform))
+                    {return false;}
+            }
+            catch { }
         }
         return true;
     }
@@ -45,8 +48,9 @@ public class Tetro : MonoBehaviour
         // Add new children to grid
         foreach (Transform child in transform)
         {
-            Vector2 v = Game.roundVec2(child.position);
-            Game.grid[(int)v.x, (int)v.y] = child;
+            Vector2 v = Game.round(child.position);
+            try { Game.grid[(int)v.x, (int)v.y] = child; }
+            catch { }
         }
     }
     void Update()
@@ -177,7 +181,9 @@ public class Tetro : MonoBehaviour
                 // Clear filled horizontal lines
 
                 FindObjectOfType<Game>().deleteFullRows();
-                
+                if (FindObjectOfType<Game>().checkabovegrid(this)) {
+                    FindObjectOfType<Game>().GameOver();
+                }
                 
                 // Spawn next Group
                 FindObjectOfType<Game>().SpawnerNext();
